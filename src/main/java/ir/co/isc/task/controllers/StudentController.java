@@ -1,6 +1,6 @@
 package ir.co.isc.task.controllers;
 
-import ir.co.isc.task.models.Student;
+import ir.co.isc.task.models.StudentDTO;
 import ir.co.isc.task.services.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,24 +24,24 @@ public class StudentController {
     private final StudentService studentService;
 
     @GetMapping(STUDENTS_PATH)
-    public List<Student> getStudents() {
+    public List<StudentDTO> getStudents() {
         
-        List<Student> list = new ArrayList<>();
+        List<StudentDTO> list = new ArrayList<>();
         
         return list;
     }
 
     @GetMapping( STUDENTS_PATH_WITH_ID)
-    public Student getStudentById(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId) {
+    public StudentDTO getStudentById(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId) {
 
-        Student student1 = Student.builder()
+        StudentDTO student1 = StudentDTO.builder()
                 .id(studentId).build();
 
         return student1;
     }
 
     @PostMapping(STUDENTS_PATH)
-    public ResponseEntity addStudent(@RequestBody Student student) {
+    public ResponseEntity addStudent(@RequestBody StudentDTO student) {
         student.setId(123465L);
 
         log.info(student.toString());
@@ -53,14 +53,14 @@ public class StudentController {
     }
 
     @PutMapping( STUDENTS_PATH_WITH_ID)
-    public ResponseEntity updateStudent(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId, @RequestBody Student student) {
+    public ResponseEntity updateStudent(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId, @RequestBody StudentDTO student) {
         log.info(studentId.toString());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping( STUDENTS_PATH_WITH_ID)
-    public ResponseEntity partialUpdateStudent(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId, @RequestBody Student student) {
+    public ResponseEntity partialUpdateStudent(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId, @RequestBody StudentDTO student) {
         log.info(studentId.toString());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);

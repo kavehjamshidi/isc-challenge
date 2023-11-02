@@ -1,5 +1,6 @@
 package ir.co.isc.task.models;
 
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -7,11 +8,10 @@ import java.time.LocalDateTime;
 
 @Builder
 @Data
-public class Professor {
+public class CourseDTO {
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String nationalId;
+    private String title;
+    private Integer capacity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime deletedAt;

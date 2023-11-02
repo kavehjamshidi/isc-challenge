@@ -1,6 +1,6 @@
 package ir.co.isc.task.controllers;
 
-import ir.co.isc.task.models.Professor;
+import ir.co.isc.task.models.ProfessorDTO;
 import ir.co.isc.task.services.ProfessorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,24 +24,24 @@ public class ProfessorController {
     private final ProfessorService professorService;
 
     @GetMapping(PROFESSORS_PATH)
-    public List<Professor> getProfessors() {
+    public List<ProfessorDTO> getProfessors() {
 
-        List<Professor> list = new ArrayList<>();
+        List<ProfessorDTO> list = new ArrayList<>();
 
         return list;
     }
 
     @GetMapping( PROFESSORS_PATH_WITH_ID)
-    public Professor getProfessorById(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId) {
+    public ProfessorDTO getProfessorById(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId) {
 
-        Professor professor1 = Professor.builder()
+        ProfessorDTO professor1 = ProfessorDTO.builder()
                 .id(professorId).build();
 
         return professor1;
     }
 
     @PostMapping(PROFESSORS_PATH)
-    public ResponseEntity addProfessor(@RequestBody Professor professor) {
+    public ResponseEntity addProfessor(@RequestBody ProfessorDTO professor) {
         professor.setId(123465L);
 
         log.info(professor.toString());
@@ -53,14 +53,14 @@ public class ProfessorController {
     }
 
     @PutMapping( PROFESSORS_PATH_WITH_ID)
-    public ResponseEntity updateProfessor(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId, @RequestBody Professor professor) {
+    public ResponseEntity updateProfessor(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId, @RequestBody ProfessorDTO professor) {
         log.info(professorId.toString());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping( PROFESSORS_PATH_WITH_ID)
-    public ResponseEntity partialUpdateProfessor(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId, @RequestBody Professor professor) {
+    public ResponseEntity partialUpdateProfessor(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId, @RequestBody ProfessorDTO professor) {
         log.info(professorId.toString());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);

@@ -1,8 +1,8 @@
 package ir.co.isc.task.services;
 
-import ir.co.isc.task.domain.Professor;
+import ir.co.isc.task.models.ProfessorDTO;
 
 public interface ProfessorService {
 
-    Iterable<Professor> findAll();
+    Iterable<ProfessorDTO> findAll();
 }

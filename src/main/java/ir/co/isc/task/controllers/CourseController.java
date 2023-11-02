@@ -1,6 +1,6 @@
 package ir.co.isc.task.controllers;
 
-import ir.co.isc.task.models.Course;
+import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,12 +25,12 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping(COURSES_PATH)
-    public List<Course> getCourses() {
+    public List<CourseDTO> getCourses() {
 
-        Course course1 = Course.builder()
+        CourseDTO course1 = CourseDTO.builder()
                 .id(123456L).build();
 
-        List<Course> list = new ArrayList<>();
+        List<CourseDTO> list = new ArrayList<>();
 
         list.add(course1);
 
@@ -38,16 +38,16 @@ public class CourseController {
     }
 
     @GetMapping( COURSES_PATH_WITH_ID)
-    public Course getCourseById(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId) {
+    public CourseDTO getCourseById(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId) {
 
-        Course course1 = Course.builder()
+        CourseDTO course1 = CourseDTO.builder()
                 .id(courseId).build();
 
         return course1;
     }
 
     @PostMapping(COURSES_PATH)
-    public ResponseEntity addCourse(@RequestBody Course course) {
+    public ResponseEntity addCourse(@RequestBody CourseDTO course) {
         course.setId(123465L);
 
         log.info(course.toString());
@@ -59,14 +59,14 @@ public class CourseController {
     }
 
     @PutMapping( COURSES_PATH_WITH_ID)
-    public ResponseEntity updateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody Course course) {
+    public ResponseEntity updateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody CourseDTO course) {
         log.info(courseId.toString());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping( COURSES_PATH_WITH_ID)
-    public ResponseEntity partialUpdateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody Course course) {
+    public ResponseEntity partialUpdateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody CourseDTO course) {
         log.info(courseId.toString());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
