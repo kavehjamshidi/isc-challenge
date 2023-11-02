@@ -1,0 +1,18 @@
+package ir.co.isc.task.models;
+
+
+import lombok.Builder;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+
+@Builder
+@Data
+public class Course {
+    private Long id;
+    private String title;
+    private Integer capacity;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime deletedAt;
+}
