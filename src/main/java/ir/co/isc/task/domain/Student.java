@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -38,15 +42,14 @@ public class Student {
     @NotNull
     @NotBlank
     @Pattern(regexp = "^\\d{10}$")
+    @JdbcTypeCode(SqlTypes.CHAR)
     @Column(nullable = false, unique = true, length = 10)
     private String nationalId;
 
-    @NotNull
-    @Column(nullable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @NotNull
-    @Column(nullable = false)
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     @ToString.Exclude
