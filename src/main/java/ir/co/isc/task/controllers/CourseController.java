@@ -8,15 +8,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-//@RequestMapping("/api/v1/courses")
 public class CourseController {
 
     public static final String COURSES_PATH = "/api/v1/courses";
@@ -36,7 +35,7 @@ public class CourseController {
     }
 
     @PostMapping(COURSES_PATH)
-    public ResponseEntity addCourse(@RequestBody CourseDTO course) {
+    public ResponseEntity addCourse(@Validated @RequestBody CourseDTO course) {
         CourseDTO savedCourse = courseService.addCourse(course);
 
         HttpHeaders headers = new HttpHeaders();
@@ -46,7 +45,7 @@ public class CourseController {
     }
 
     @PutMapping(COURSES_PATH_WITH_ID)
-    public ResponseEntity updateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody CourseDTO course) {
+    public ResponseEntity updateCourse(@Validated @PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody CourseDTO course) {
         if (courseService.updateCourseById(courseId, course).isEmpty()) {
             throw new NotFoundException();
         }
@@ -56,7 +55,9 @@ public class CourseController {
 
     @DeleteMapping(COURSES_PATH_WITH_ID)
     public ResponseEntity deleteCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId) {
-        log.info(courseId.toString());
+        if (!courseService.deleteCourseById(courseId)) {
+            throw new NotFoundException();
+        }
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
