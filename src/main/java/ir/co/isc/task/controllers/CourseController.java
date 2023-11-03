@@ -1,5 +1,6 @@
 package ir.co.isc.task.controllers;
 
+import ir.co.isc.task.controllers.exceptions.NotFoundException;
 import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.services.CourseService;
 import lombok.RequiredArgsConstructor;
@@ -26,48 +27,29 @@ public class CourseController {
 
     @GetMapping(COURSES_PATH)
     public List<CourseDTO> getCourses() {
-
-        CourseDTO course1 = CourseDTO.builder()
-                .id(123456L).build();
-
-        List<CourseDTO> list = new ArrayList<>();
-
-        list.add(course1);
-
-        return list;
+        return courseService.findAll();
     }
 
-    @GetMapping( COURSES_PATH_WITH_ID)
+    @GetMapping(COURSES_PATH_WITH_ID)
     public CourseDTO getCourseById(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId) {
-
-        CourseDTO course1 = CourseDTO.builder()
-                .id(courseId).build();
-
-        return course1;
+        return courseService.findById(courseId).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping(COURSES_PATH)
     public ResponseEntity addCourse(@RequestBody CourseDTO course) {
-        course.setId(123465L);
-
-        log.info(course.toString());
+        CourseDTO savedCourse = courseService.addCourse(course);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location",COURSES_PATH + "/" + course.getId());
+        headers.add("Location", COURSES_PATH + "/" + savedCourse.getId().toString());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @PutMapping( COURSES_PATH_WITH_ID)
+    @PutMapping(COURSES_PATH_WITH_ID)
     public ResponseEntity updateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody CourseDTO course) {
-        log.info(courseId.toString());
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
-    @PatchMapping( COURSES_PATH_WITH_ID)
-    public ResponseEntity partialUpdateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody CourseDTO course) {
-        log.info(courseId.toString());
+        if (courseService.updateCourseById(courseId, course).isEmpty()) {
+            throw new NotFoundException();
+        }
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

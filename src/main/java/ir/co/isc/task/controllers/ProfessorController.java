@@ -1,5 +1,6 @@
 package ir.co.isc.task.controllers;
 
+import ir.co.isc.task.controllers.exceptions.NotFoundException;
 import ir.co.isc.task.models.ProfessorDTO;
 import ir.co.isc.task.services.ProfessorService;
 import lombok.RequiredArgsConstructor;
@@ -25,43 +26,29 @@ public class ProfessorController {
 
     @GetMapping(PROFESSORS_PATH)
     public List<ProfessorDTO> getProfessors() {
-
-        List<ProfessorDTO> list = new ArrayList<>();
-
-        return list;
+        return professorService.findAll();
     }
 
     @GetMapping( PROFESSORS_PATH_WITH_ID)
     public ProfessorDTO getProfessorById(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId) {
-
-        ProfessorDTO professor1 = ProfessorDTO.builder()
-                .id(professorId).build();
-
-        return professor1;
+      return professorService.findById(professorId).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping(PROFESSORS_PATH)
     public ResponseEntity addProfessor(@RequestBody ProfessorDTO professor) {
-        professor.setId(123465L);
-
-        log.info(professor.toString());
+        ProfessorDTO savedProfessor = professorService.addProfessor(professor);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location",PROFESSORS_PATH + "/" + professor.getId());
+        headers.add("Location",PROFESSORS_PATH + "/" + savedProfessor.getId().toString());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     @PutMapping( PROFESSORS_PATH_WITH_ID)
     public ResponseEntity updateProfessor(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId, @RequestBody ProfessorDTO professor) {
-        log.info(professorId.toString());
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
-    @PatchMapping( PROFESSORS_PATH_WITH_ID)
-    public ResponseEntity partialUpdateProfessor(@PathVariable(PROFESSOR_ID_PARAM_NAME) Long professorId, @RequestBody ProfessorDTO professor) {
-        log.info(professorId.toString());
+        if(professorService.updateProfessorById(professorId, professor).isEmpty()) {
+            throw new NotFoundException();
+        }
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

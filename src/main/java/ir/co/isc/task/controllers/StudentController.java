@@ -1,5 +1,6 @@
 package ir.co.isc.task.controllers;
 
+import ir.co.isc.task.controllers.exceptions.NotFoundException;
 import ir.co.isc.task.models.StudentDTO;
 import ir.co.isc.task.services.StudentService;
 import lombok.RequiredArgsConstructor;
@@ -25,43 +26,29 @@ public class StudentController {
 
     @GetMapping(STUDENTS_PATH)
     public List<StudentDTO> getStudents() {
-        
-        List<StudentDTO> list = new ArrayList<>();
-        
-        return list;
+       return studentService.findAll();
     }
 
     @GetMapping( STUDENTS_PATH_WITH_ID)
     public StudentDTO getStudentById(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId) {
-
-        StudentDTO student1 = StudentDTO.builder()
-                .id(studentId).build();
-
-        return student1;
+        return studentService.findById(studentId).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping(STUDENTS_PATH)
     public ResponseEntity addStudent(@RequestBody StudentDTO student) {
-        student.setId(123465L);
-
-        log.info(student.toString());
+        StudentDTO savedStudent = studentService.addStudent(student);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location",STUDENTS_PATH + "/" + student.getId());
+        headers.add("Location",STUDENTS_PATH + "/" + savedStudent.getId().toString());
 
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     @PutMapping( STUDENTS_PATH_WITH_ID)
     public ResponseEntity updateStudent(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId, @RequestBody StudentDTO student) {
-        log.info(studentId.toString());
-
-        return new ResponseEntity(HttpStatus.NO_CONTENT);
-    }
-
-    @PatchMapping( STUDENTS_PATH_WITH_ID)
-    public ResponseEntity partialUpdateStudent(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId, @RequestBody StudentDTO student) {
-        log.info(studentId.toString());
+        if(studentService.updateStudentById(studentId, student).isEmpty()) {
+            throw new NotFoundException();
+        }
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
