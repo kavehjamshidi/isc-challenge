@@ -1,9 +1,11 @@
 package ir.co.isc.task.controllers;
 
-import ir.co.isc.task.controllers.exceptions.NotFoundException;
+import ir.co.isc.task.exceptions.ConflictException;
+import ir.co.isc.task.exceptions.NotFoundException;
 import jakarta.persistence.RollbackException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -20,6 +22,11 @@ public class ExceptionController {
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity handleNotFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity handleConflictException() {
+        return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

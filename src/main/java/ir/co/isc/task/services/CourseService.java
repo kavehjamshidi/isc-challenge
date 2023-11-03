@@ -1,20 +1,18 @@
 package ir.co.isc.task.services;
 
 import ir.co.isc.task.models.CourseDTO;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
 
 public interface CourseService {
 
-    List<CourseDTO> findAll();
+    Page<CourseDTO> findAll(Integer pageNumber, Integer pageSize);
 
-    Optional<CourseDTO> findById(Long id);
+    CourseDTO findById(Long id);
 
-    CourseDTO addCourse(CourseDTO course);
+    CourseDTO addCourse(CourseDTO courseDto);
 
-    Optional<CourseDTO> updateCourseById(Long id, CourseDTO courseDTO);
+    void updateCourseById(Long id, CourseDTO courseDto);
 
-    Boolean deleteCourseById(Long id);
+    void deleteCourseById(Long id);
 }
 

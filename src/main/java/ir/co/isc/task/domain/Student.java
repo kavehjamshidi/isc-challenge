@@ -52,9 +52,11 @@ public class Student {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "students")
+    @ManyToMany
+    @JoinTable(name = "course_students", joinColumns = @JoinColumn(name = "student_id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id"))
     private Set<Course> courses = new HashSet<>();
-
 }

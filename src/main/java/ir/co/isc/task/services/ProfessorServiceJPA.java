@@ -1,44 +1,59 @@
 package ir.co.isc.task.services;
 
+import ir.co.isc.task.domain.Professor;
+import ir.co.isc.task.exceptions.NotFoundException;
 import ir.co.isc.task.mappers.CourseMapper;
 import ir.co.isc.task.mappers.ProfessorMapper;
 import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.models.ProfessorDTO;
+import ir.co.isc.task.repositories.CourseRepository;
 import ir.co.isc.task.repositories.ProfessorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ProfessorServiceJPA implements ProfessorService {
 
+    private final static Integer DEFAULT_PAGE_NUMBER = 0;
+    private final static Integer DEFAULT_PAGE_SIZE = 10;
+    private final static Integer MAX_PAGE_SIZE = 100;
+
     private final ProfessorRepository professorRepository;
+    private final CourseRepository courseRepository;
     private final ProfessorMapper professorMapper;
     private final CourseMapper courseMapper;
 
     @Override
-    public List<ProfessorDTO> findAll() {
-        return professorRepository.findAll()
-                .stream()
-                .map(professorMapper::professorToProfessorDto)
-                .collect(Collectors.toList());
+    public Page<ProfessorDTO> findAll(Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize);
+
+        return professorRepository.findAll(pageRequest)
+                .map(professorMapper::professorToProfessorDto);
     }
 
     @Override
-    public Optional<ProfessorDTO> findById(Long id) {
-        return Optional.ofNullable(professorMapper.professorToProfessorDto(professorRepository.findById(id).orElse(null)));
+    public ProfessorDTO findById(Long id) {
+        Optional<Professor> professor = professorRepository.findById(id);
+
+        if (professor.isEmpty()) {
+            throw new NotFoundException("professor not found");
+        }
+
+        return professorMapper.professorToProfessorDto(professor.get());
     }
 
     @Override
-    public List<CourseDTO> findCourses(Long id) {
-        return null;
+    public Page<CourseDTO> findCourses(Long id, Integer pageNumber, Integer pageSize) {
+        PageRequest pageRequest = buildPageRequest(pageNumber, pageSize);
+
+        return courseRepository.findAllByProfessor_Id(id, pageRequest).map(courseMapper::courseToCourseDto);
     }
 
     @Override
@@ -51,34 +66,51 @@ public class ProfessorServiceJPA implements ProfessorService {
     }
 
     @Override
-    public Optional<ProfessorDTO> updateProfessorById(Long id, ProfessorDTO professor) {
-        AtomicReference<Optional<ProfessorDTO>> atomicReference = new AtomicReference<>();
+    public void updateProfessorById(Long id, ProfessorDTO professorDto) {
+        Optional<Professor> professor = professorRepository.findById(id);
 
-        professorRepository.findById(id).ifPresentOrElse(foundProfessor -> {
-            if (professorRepository.existsByNationalId(professor.getNationalId())) {
-                throw new DuplicateKeyException("duplicate nationalId");
-            }
+        if (professor.isEmpty()) {
+            throw new NotFoundException("professor not found");
+        }
 
-            foundProfessor.setFirstName(professor.getFirstName());
-            foundProfessor.setLastName(professor.getLastName());
-            foundProfessor.setNationalId(professor.getNationalId());
-            foundProfessor.setUpdatedAt(LocalDateTime.now());
+        if (professorRepository.existsByNationalId(professorDto.getNationalId())) {
+            throw new DuplicateKeyException("duplicate nationalId");
+        }
 
-            atomicReference.set(Optional.of(professorMapper
-                    .professorToProfessorDto(professorRepository.save(foundProfessor))));
-        }, () -> {
-            atomicReference.set(Optional.empty());
-        });
+        Professor foundProfessor = professor.get();
+        foundProfessor.setFirstName(professorDto.getFirstName());
+        foundProfessor.setLastName(professorDto.getLastName());
+        foundProfessor.setNationalId(professorDto.getNationalId());
 
-        return atomicReference.get();
+        professorRepository.save(foundProfessor);
     }
 
     @Override
-    public Boolean deleteProfessorById(Long id) {
-        if (professorRepository.existsById(id)) {
-            professorRepository.deleteById(id);
-            return true;
+    public void deleteProfessorById(Long id) {
+        if (!professorRepository.existsById(id)) {
+            throw new NotFoundException("professor not found");
         }
-        return false;
+        professorRepository.deleteById(id);
+    }
+
+    private PageRequest buildPageRequest(Integer pageNumber, Integer pageSize) {
+        Integer queryPageNumber;
+        Integer queryPageSize;
+
+        if (pageNumber != null && pageNumber > 0) {
+            queryPageNumber = pageNumber - 1;
+        } else {
+            queryPageNumber = DEFAULT_PAGE_NUMBER;
+        }
+
+        if (pageSize != null && pageSize > 0 && pageSize < MAX_PAGE_SIZE) {
+            queryPageSize = pageSize;
+        } else {
+            queryPageSize = DEFAULT_PAGE_SIZE;
+        }
+
+        Sort sort = Sort.by(Sort.Order.asc("id"));
+
+        return PageRequest.of(queryPageNumber, queryPageSize, sort);
     }
 }

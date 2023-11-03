@@ -1,17 +1,16 @@
 package ir.co.isc.task.controllers;
 
-import ir.co.isc.task.controllers.exceptions.NotFoundException;
+import ir.co.isc.task.exceptions.NotFoundException;
 import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.services.CourseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,13 +24,15 @@ public class CourseController {
     private final CourseService courseService;
 
     @GetMapping(COURSES_PATH)
-    public List<CourseDTO> getCourses() {
-        return courseService.findAll();
+    public Page<CourseDTO> getCourses(
+            @RequestParam(required = false) Integer pageNumber,
+            @RequestParam(required = false) Integer pageSize) {
+        return courseService.findAll(pageNumber, pageSize);
     }
 
     @GetMapping(COURSES_PATH_WITH_ID)
     public CourseDTO getCourseById(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId) {
-        return courseService.findById(courseId).orElseThrow(NotFoundException::new);
+        return courseService.findById(courseId);
     }
 
     @PostMapping(COURSES_PATH)
@@ -45,19 +46,15 @@ public class CourseController {
     }
 
     @PutMapping(COURSES_PATH_WITH_ID)
-    public ResponseEntity updateCourse(@Validated @PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @RequestBody CourseDTO course) {
-        if (courseService.updateCourseById(courseId, course).isEmpty()) {
-            throw new NotFoundException();
-        }
+    public ResponseEntity updateCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId, @Validated @RequestBody CourseDTO course) {
+        courseService.updateCourseById(courseId, course);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(COURSES_PATH_WITH_ID)
     public ResponseEntity deleteCourse(@PathVariable(COURSE_ID_PARAM_NAME) Long courseId) {
-        if (!courseService.deleteCourseById(courseId)) {
-            throw new NotFoundException();
-        }
+        courseService.deleteCourseById(courseId);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

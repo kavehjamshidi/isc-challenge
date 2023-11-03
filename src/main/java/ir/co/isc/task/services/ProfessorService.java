@@ -2,21 +2,19 @@ package ir.co.isc.task.services;
 
 import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.models.ProfessorDTO;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.data.domain.Page;
 
 public interface ProfessorService {
 
-    List<ProfessorDTO> findAll();
+    Page<ProfessorDTO> findAll(Integer pageNumber, Integer pageSize);
 
-    Optional<ProfessorDTO> findById(Long id);
+    ProfessorDTO findById(Long id);
 
-    List<CourseDTO> findCourses(Long id);
+    Page<CourseDTO> findCourses(Long id, Integer pageNumber, Integer pageSize);
 
-    ProfessorDTO addProfessor(ProfessorDTO professor);
+    ProfessorDTO addProfessor(ProfessorDTO professorDto);
 
-    Optional<ProfessorDTO> updateProfessorById(Long id, ProfessorDTO professor);
+    void updateProfessorById(Long id, ProfessorDTO professorDto);
 
-    Boolean deleteProfessorById(Long id);
+    void deleteProfessorById(Long id);
 }

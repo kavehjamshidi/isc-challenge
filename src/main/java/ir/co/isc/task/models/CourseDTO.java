@@ -21,6 +21,9 @@ public class CourseDTO {
     @Positive
     private Integer capacity;
 
+    @NotNull
+    private Long professorId;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
