@@ -1,6 +1,10 @@
 package ir.co.isc.task.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -18,18 +22,29 @@ public class Professor {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
+    @NotNull
+    @NotBlank
+    @Size(max = 50)
+    @Column(nullable = false, length = 50)
     private String firstName;
 
-    @Column(nullable = false)
+    @NotNull
+    @NotBlank
+    @Size(max = 50)
+    @Column(nullable = false, length = 50)
     private String lastName;
 
-    @Column(nullable = false, unique = true)
+    @NotNull
+    @NotBlank
+    @Pattern(regexp = "^\\d{10}$")
+    @Column(nullable = false, unique = true, length = 10)
     private String nationalId;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @NotNull
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
