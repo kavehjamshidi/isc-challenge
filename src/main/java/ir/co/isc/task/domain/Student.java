@@ -19,9 +19,6 @@ public class Student {
     @Column(updatable = false, nullable = false)
     private Long id;
 
-//    @Version
-//    private Integer version;
-
     @Column(nullable = false)
     private String firstName;
 
@@ -36,8 +33,6 @@ public class Student {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

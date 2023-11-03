@@ -18,9 +18,6 @@ public class Professor {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-//    @Version
-//    private Integer version;
-
     @Column(nullable = false)
     private String firstName;
 
@@ -35,8 +32,6 @@ public class Professor {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
-
-    private LocalDateTime deletedAt;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

@@ -14,5 +14,4 @@ public class CourseDTO {
     private Integer capacity;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 }

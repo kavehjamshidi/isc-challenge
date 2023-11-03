@@ -14,5 +14,4 @@ public class ProfessorDTO {
     private String nationalId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime deletedAt;
 }
