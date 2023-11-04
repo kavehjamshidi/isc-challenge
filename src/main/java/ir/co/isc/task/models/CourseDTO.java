@@ -1,6 +1,7 @@
 package ir.co.isc.task.models;
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CourseDTO {
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @NotNull
@@ -28,6 +31,9 @@ public class CourseDTO {
     @NotNull
     private Long professorId;
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createdAt;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime updatedAt;
 }

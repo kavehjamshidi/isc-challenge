@@ -1,5 +1,6 @@
 package ir.co.isc.task.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -16,6 +17,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StudentDTO {
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @NotNull
@@ -33,6 +36,9 @@ public class StudentDTO {
     @Pattern(regexp = "^\\d{10}$")
     private String nationalId;
 
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime createdAt;
+
+    @Schema(accessMode = Schema.AccessMode.READ_ONLY)
     private LocalDateTime updatedAt;
 }
