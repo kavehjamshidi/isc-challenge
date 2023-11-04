@@ -5,7 +5,6 @@ import ir.co.isc.task.models.EnrollmentDTO;
 import ir.co.isc.task.models.StudentDTO;
 import ir.co.isc.task.services.StudentService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class StudentController {
@@ -76,6 +74,14 @@ public class StudentController {
     public ResponseEntity enroll(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId,
                                  @Validated @RequestBody EnrollmentDTO enrollmentDto) {
         studentService.enrollCourse(studentId, enrollmentDto.getCourseId());
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping(DROP_COURSE_PATH)
+    public ResponseEntity drop(@PathVariable(STUDENT_ID_PARAM_NAME) Long studentId,
+                                 @Validated @RequestBody EnrollmentDTO enrollmentDto) {
+        studentService.dropCourse(studentId, enrollmentDto.getCourseId());
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

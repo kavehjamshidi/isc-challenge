@@ -1,5 +1,6 @@
 package ir.co.isc.task.services;
 
+import ir.co.isc.task.domain.Course;
 import ir.co.isc.task.domain.Professor;
 import ir.co.isc.task.exceptions.NotFoundException;
 import ir.co.isc.task.mappers.CourseMapper;
@@ -8,6 +9,7 @@ import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.models.ProfessorDTO;
 import ir.co.isc.task.repositories.CourseRepository;
 import ir.co.isc.task.repositories.ProfessorRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
@@ -15,7 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -86,10 +90,23 @@ public class ProfessorServiceJPA implements ProfessorService {
     }
 
     @Override
+    @Transactional
     public void deleteProfessorById(Long id) {
         if (!professorRepository.existsById(id)) {
             throw new NotFoundException("professor not found");
         }
+
+        Optional<Professor> professor = professorRepository.findById(id);
+        if (professor.isEmpty()) {
+            throw new NotFoundException("professor not found");
+        }
+        Professor foundProfessor = professor.get();
+        Set<Course> courses = foundProfessor.getCourses();
+        courses.forEach(course -> {
+            course.setStudents(new HashSet<>());
+        });
+
+        courseRepository.saveAll(courses);
         professorRepository.deleteById(id);
     }
 

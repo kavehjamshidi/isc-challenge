@@ -20,12 +20,28 @@ import java.util.Map;
 public class ExceptionController {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException() {
+    public ResponseEntity handleNotFoundException(NotFoundException exception) {
+        if (!exception.getMessage().isEmpty() &&
+                !exception.getMessage().isBlank()) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("error", exception.getMessage());
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMap);
+        }
+
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(ConflictException.class)
-    public ResponseEntity handleConflictException() {
+    public ResponseEntity handleConflictException(ConflictException exception) {
+        if (!exception.getMessage().isEmpty() &&
+                !exception.getMessage().isBlank()) {
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("error", exception.getMessage());
+
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(errorMap);
+        }
+
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
 
@@ -70,7 +86,7 @@ public class ExceptionController {
         if (!exception.getMessage().isEmpty() &&
                 !exception.getMessage().isBlank()) {
             Map<String, String> errorMap = new HashMap<>();
-            errorMap.put("Duplicate Data", exception.getMessage());
+            errorMap.put("Error", exception.getMessage());
 
             return ResponseEntity.badRequest().body(errorMap);
         }

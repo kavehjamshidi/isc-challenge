@@ -55,8 +55,20 @@ public class Student {
     @Builder.Default
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany
-    @JoinTable(name = "course_students", joinColumns = @JoinColumn(name = "student_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
+    @ManyToMany(mappedBy = "students")
     private Set<Course> courses = new HashSet<>();
+
+    public Boolean hasEnrolled(Course course) {
+        return courses.contains(course);
+    }
+
+    public void addCourse(Course course) {
+        courses.add(course);
+        course.addStudent(this);
+    }
+
+    public void removeCourse(Course course) {
+        courses.remove(course);
+        course.removeStudent(this);
+    }
 }

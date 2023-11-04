@@ -10,6 +10,7 @@ import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.models.StudentDTO;
 import ir.co.isc.task.repositories.CourseRepository;
 import ir.co.isc.task.repositories.StudentRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -87,14 +90,25 @@ public class StudentServiceJPA implements StudentService {
     }
 
     @Override
+    @Transactional
     public void deleteStudentById(Long id) {
-        if (!studentRepository.existsById(id)) {
+        Optional<Student> student = studentRepository.findById(id);
+        if (student.isEmpty()) {
             throw new NotFoundException("student not found");
         }
+
+        Student foundStudent = student.get();
+        Set<Course> courses = foundStudent.getCourses();
+        courses.forEach(course -> {
+            course.setStudents(new HashSet<>());
+        });
+
+        courseRepository.saveAll(courses);
         studentRepository.deleteById(id);
     }
 
     @Override
+    @Transactional
     public void enrollCourse(Long studentId, Long courseId) {
         Optional<Student> student = studentRepository.findById(studentId);
         if (student.isEmpty()) {
@@ -103,21 +117,26 @@ public class StudentServiceJPA implements StudentService {
         Student foundStudent = student.get();
 
         Optional<Course> course = courseRepository.findById(courseId);
-        if (course.isEmpty()){
+        if (course.isEmpty()) {
             throw new NotFoundException("course not found");
         }
         Course foundCourse = course.get();
 
-        if (foundStudent.getCourses().contains(foundCourse)) {
+        if (foundStudent.hasEnrolled(foundCourse)) {
             throw new ConflictException("already enrolled");
         }
 
-        foundStudent.getCourses().add(foundCourse);
+        if (foundCourse.isFull()) {
+            throw new ConflictException("no more room for new students");
+        }
+
+        foundStudent.addCourse(foundCourse);
 
         studentRepository.save(foundStudent);
     }
 
     @Override
+    @Transactional
     public void dropCourse(Long studentId, Long courseId) {
         Optional<Student> student = studentRepository.findById(studentId);
         if (student.isEmpty()) {
@@ -126,16 +145,16 @@ public class StudentServiceJPA implements StudentService {
         Student foundStudent = student.get();
 
         Optional<Course> course = courseRepository.findById(courseId);
-        if (course.isEmpty()){
+        if (course.isEmpty()) {
             throw new NotFoundException("course not found");
         }
         Course foundCourse = course.get();
 
-        if (!foundStudent.getCourses().contains(foundCourse)) {
+        if (!foundStudent.hasEnrolled(foundCourse)) {
             throw new ConflictException("not enrolled");
         }
 
-        foundStudent.getCourses().remove(foundCourse);
+        foundStudent.removeCourse(foundCourse);
 
         studentRepository.save(foundStudent);
     }

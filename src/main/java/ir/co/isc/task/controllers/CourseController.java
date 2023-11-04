@@ -1,10 +1,8 @@
 package ir.co.isc.task.controllers;
 
-import ir.co.isc.task.exceptions.NotFoundException;
 import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.services.CourseService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class CourseController {

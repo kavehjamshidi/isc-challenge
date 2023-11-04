@@ -53,6 +53,6 @@ public class Professor {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "professor")
+    @OneToMany(mappedBy = "professor", cascade = CascadeType.REMOVE)
     private Set<Course> courses = new HashSet<>();
 }

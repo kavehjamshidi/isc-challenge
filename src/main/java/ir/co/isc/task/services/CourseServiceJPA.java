@@ -7,12 +7,14 @@ import ir.co.isc.task.mappers.CourseMapper;
 import ir.co.isc.task.models.CourseDTO;
 import ir.co.isc.task.repositories.CourseRepository;
 import ir.co.isc.task.repositories.ProfessorRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -83,10 +85,16 @@ public class CourseServiceJPA implements CourseService {
     }
 
     @Override
+    @Transactional
     public void deleteCourseById(Long id) {
-        if (courseRepository.existsById(id)) {
+        Optional<Course> course = courseRepository.findById(id);
+        if (course.isEmpty()) {
             throw new NotFoundException("course not found");
         }
+        Course foundCourse = course.get();
+        foundCourse.setStudents(new HashSet<>());
+
+        courseRepository.save(foundCourse);
         courseRepository.deleteById(id);
     }
 
