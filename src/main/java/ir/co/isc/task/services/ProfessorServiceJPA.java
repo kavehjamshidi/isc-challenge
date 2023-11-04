@@ -92,10 +92,6 @@ public class ProfessorServiceJPA implements ProfessorService {
     @Override
     @Transactional
     public void deleteProfessorById(Long id) {
-        if (!professorRepository.existsById(id)) {
-            throw new NotFoundException("professor not found");
-        }
-
         Optional<Professor> professor = professorRepository.findById(id);
         if (professor.isEmpty()) {
             throw new NotFoundException("professor not found");
